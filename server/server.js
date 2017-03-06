@@ -6,6 +6,7 @@ var User = require('./models/user.js').User;
 var ObjectID = require('mongodb').ObjectID;
 
 var app = express();
+var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -35,7 +36,7 @@ app.get('/todos', (req, res) => {
 
 app.get('/todos/:id', (req, res) => {
 	var id = req.params.id;
-	
+
 	if(ObjectID.isValid(id)) {
 		Todo.findById(id)
 			.then((todo) => {
@@ -53,8 +54,8 @@ app.get('/todos/:id', (req, res) => {
 	}
 });
 
-app.listen(3000, () => {
-	console.log('Server Started on Port 3000');
+app.listen(port, () => {
+	console.log(`Server Started on Port ${port}`);
 });
 
 module.exports = {

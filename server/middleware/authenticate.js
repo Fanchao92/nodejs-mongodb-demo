@@ -7,7 +7,6 @@ function authenticate(req, res, next) {
 		.then((usr) => {
 			if(usr) {
 				req.user = usr;
-				req.token = token;
 				next();
 			} else {
 				res.status(401).send({});

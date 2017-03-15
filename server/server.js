@@ -15,6 +15,7 @@ var mongoose = require('./db/mongoose.js').mongoose;
 var Todo = require('./models/todo.js').Todo;
 var User = require('./models/user.js').User;
 var ObjectID = require('mongodb').ObjectID;
+var authenticate = require('./middleware/authenticate.js').authenticate;
 
 var app = express();
 var port = process.env.PORT;
@@ -126,6 +127,10 @@ app.post('/users', (req, res) => {
 		.catch((err) => {
 			res.status(400).send(err);
 		});
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+	res.send(req.user);
 });
 
 app.listen(port, () => {

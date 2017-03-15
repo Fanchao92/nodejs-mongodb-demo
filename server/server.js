@@ -118,7 +118,10 @@ app.post('/users', (req, res) => {
 
 	user.save()
 		.then((usr) => {
-			res.send(usr);
+			return usr.generateAuthToken();
+		})
+		.then((tk) => {
+			res.header('x-auth', tk).send(user);
 		})
 		.catch((err) => {
 			res.status(400).send(err);

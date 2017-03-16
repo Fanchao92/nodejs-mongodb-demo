@@ -74,11 +74,41 @@ UserSchema.statics.findByToken = function(token) {
 		});
 	}
 
-	return User.findOne({
+	return this.findOne({
 		_id: decoded._id,
 		'tokens.token': token,
 		'tokens.access': decoded.access
 	});
+}
+
+UserSchema.statics.findByCredentials = function(email, password) {
+	return this.findOne({email})
+		.then((user) => {
+			if(user) {
+				return new Promise((resolve, reject) => {
+					bcrypt.compare(password, user.password, (err, res) => {
+						if(err) {
+							reject(err);
+						} else {
+							if(res) {
+								resolve(user);
+							} else {
+								reject(new Error('Password does NOT match!'));
+							}
+						}
+					});
+				});
+			} else {
+				return new Promise((res, rej) => {
+					rej();
+				});
+			}
+		})
+		.catch((err) => {
+			return new Promise((res, rej) => {
+				rej();
+			});
+		});
 }
 
 var User = mongoose.model('User', UserSchema);

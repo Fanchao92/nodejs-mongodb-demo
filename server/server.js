@@ -16,6 +16,7 @@ var Todo = require('./models/todo.js').Todo;
 var User = require('./models/user.js').User;
 var ObjectID = require('mongodb').ObjectID;
 var authenticate = require('./middleware/authenticate.js').authenticate;
+var bcrypt = require('bcryptjs');
 
 var app = express();
 var port = process.env.PORT;
@@ -126,6 +127,22 @@ app.post('/users', (req, res) => {
 		})
 		.catch((err) => {
 			res.status(400).send(err);
+		});
+});
+
+app.post('/users/login', (req, res) => {
+	var email = req.body.email;
+	var password = req.body.password;
+
+	User.findByCredentials(email, password)
+		.then((user) => {
+			user.generateAuthToken()
+				.then((tk) => {
+					res.header('x-auth', tk).send(user);
+				});
+		})
+		.catch((err) => {
+			res.status(400).send({});
 		});
 });
 

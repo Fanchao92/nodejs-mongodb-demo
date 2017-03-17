@@ -225,3 +225,31 @@ describe('POST /users/login', () => {
 			});
 	});
 });
+
+describe('DELETE users/me/token', () => {
+	it("should delete a user's token", (done) => {
+		request(app)
+			.delete('/users/me/token')
+			.set('x-auth', users[ 0 ].tokens[ 0 ].token)
+			.send()
+			.expect(200)
+			.end((err, res) => {
+				if(err) {
+					return done(err);
+				} else {
+					User.findOne({
+						_id: users[ 0 ]._id.toHexString(),
+						"tokens.token": users[ 0 ].tokens[ 0 ].token,
+						'tokens.access': 'auth'
+					})
+					.then((user) => {
+						expect(user).toNotExist();
+						done();
+					})
+					.catch((err) => {
+						done(err);
+					});
+				}
+			});
+	});
+});
